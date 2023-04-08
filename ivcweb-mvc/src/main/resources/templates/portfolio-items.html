@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home page</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+      table,tr,th,td {
+         border:1px solid black;
+      }
+   </style>
+</head>
+<body>
+<p>
+    List of Portfolio Items/Recommendations
+</p>
+
+<div th:if="${ not#lists.isEmpty(portfolioItems)}">
+    <table>
+        <tr>
+            <th>Portfolio Name</th>
+            <th>Company</th>
+            <th>Exchange</th>
+            <th>Recommendation Date</th>
+            <th>Required Rate</th>
+            <th>Actual Purchase Value</th>
+            <th>Actual Purchase Count</th>
+            <th>Recommended Buy/Sell Value</th>
+            <th>Recommendation</th>
+        </tr>
+        <tr th:each="item : ${portfolioItems}">
+            <td th:text="${item.portfolioName}"</td>
+            <td th:text="${item.company}"</td>
+            <td th:text="${item.exchange}"</td>
+            <td th:text="${item.recommendationDate}"</td>
+            <td th:text="${item.requiredRate}"</td>
+            <td style="text-align: center" th:text="${item.actualPurchaseValue}"</td>
+            <td th:text="${item.actualPurchaseCount}"</td>
+            <td th:text="${item.recommendedSellValue}"</td>
+            <td th:text="${item.recommendation}"</td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

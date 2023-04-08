@@ -47,6 +47,12 @@ public class CompanyDataController
         }
     }
 
+    @GetMapping("/company-names")
+    private List<String> getDistinctCompanyDataByExchange(@RequestParam("exchange") String exchange) {
+        logger.info("Calling getDistinctCompanyNamesByExchange {}...", exchange);
+        return companyDataService.getDistinctCompanyNamesByExchange(exchange);
+    }
+
     //creating a get mapping that retrieves the detail of a specific id
     @GetMapping("/company-data/{id}")
     private CompanyData getCompanyData(@PathVariable("id") int id) {

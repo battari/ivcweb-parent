@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 import javax.ws.rs.core.HttpHeaders;
 
 @Component
-public class CompanyDataOtherWebClient implements CompanyDataOtherWebClientIface {
+public class CompanyDataOtherWebClient {
 
     @Value("${ivcweb.crud.baseURL}")
     private String baseURL;

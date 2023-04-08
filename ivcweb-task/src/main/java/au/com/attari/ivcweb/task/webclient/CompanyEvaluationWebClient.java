@@ -2,6 +2,7 @@ package au.com.attari.ivcweb.task.webclient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -19,7 +20,7 @@ import reactor.core.publisher.Mono;
 import javax.ws.rs.core.HttpHeaders;
 
 @Component
-public class CompanyEvaluationWebClient implements CompanyEvaluationWebClientIface {
+public class CompanyEvaluationWebClient {
 
     @Value("${ivcweb.crud.baseURL}")
     private String baseURL;
@@ -82,9 +83,28 @@ public class CompanyEvaluationWebClient implements CompanyEvaluationWebClientIfa
          return true;
     }
 
-    public ArrayList<CompanyEvaluation> listByCompanyAndDateAndRequiredRate(CompanyEvaluation inCompanyEvaluation) {
+    public List<CompanyEvaluation> listByCompanyAndDateAndRequiredRate(CompanyEvaluation inCompanyEvaluation) {
 
-        return new ArrayList<>();
+        WebClient client = getWebClient();
+
+        Flux<CompanyEvaluation> companyEvaluationFlux = client.get()
+                .uri(uriBuilder -> uriBuilder.path(urlPath)
+                        .queryParam("company",inCompanyEvaluation.getCompany())
+                        .queryParam("exchange", inCompanyEvaluation.getExchange())
+                        .queryParamIfPresent("date", Optional.ofNullable(inCompanyEvaluation.getDate()))
+                        .queryParamIfPresent("rate", Optional.ofNullable(inCompanyEvaluation.getRequiredRate()))
+                        .build())
+                .retrieve()
+                .bodyToFlux(CompanyEvaluation.class);
+        List<CompanyEvaluation> companyEvaluationL = companyEvaluationFlux
+                .collect(Collectors.toList())
+                .share().block();
+        logger.info("size of data returned for company: {}, exchange: {} is {}",
+                inCompanyEvaluation.getCompany(),
+                inCompanyEvaluation.getExchange(),
+                companyEvaluationL.size()
+        );
+        return companyEvaluationL;
     }
 
     private WebClient getWebClient() {

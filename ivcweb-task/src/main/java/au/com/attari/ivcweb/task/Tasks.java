@@ -3,7 +3,9 @@ package au.com.attari.ivcweb.task;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import au.com.attari.ivcweb.task.factory.ASXEndOfDayProcessor;
 import au.com.attari.ivcweb.task.factory.ComsecFileProcessor;
+import au.com.attari.ivcweb.task.factory.RecommendationProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,12 @@ public class Tasks {
 	@Autowired
 	ComsecFileProcessor fileProcessor;
 
+	@Autowired
+	ASXEndOfDayProcessor endOfDayProcessor;
+
+	@Autowired
+	RecommendationProcessor recommendationProcessor;
+
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"MM/dd/yyyy HH:mm:ss");
 
@@ -27,7 +35,7 @@ public class Tasks {
 		logger.info("Calling scheduler "
 				+ dateFormat.format(new Date()));
 		fileProcessor.process();
-
+		endOfDayProcessor.process();
 	}
 
 	@Scheduled(initialDelay = 1000, fixedRate = 10000)
@@ -38,11 +46,8 @@ public class Tasks {
 
 	}
 
-	@Scheduled(cron = "*/5 * * * * *")
-	public void performTaskUsingCron() {
-
-//		logger.info("Regular task performed using Cron at "
-//				+ dateFormat.format(new Date()));
-
+	@Scheduled(cron = "0 0/15 * * * *")
+	public void performTaskEvery15Ninutes() {
+		recommendationProcessor.process();
 	}
 }

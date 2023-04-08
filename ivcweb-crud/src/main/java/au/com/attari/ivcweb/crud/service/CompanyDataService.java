@@ -51,4 +51,8 @@ public class CompanyDataService
     public void update(CompanyData companyData, int id) {
         companyDataRepository.save(companyData);
     }
+
+    public List<String> getDistinctCompanyNamesByExchange(String exchange) {
+         return companyDataRepository.findDistinctCompanyNamesByExchange(exchange);
+    }
 }

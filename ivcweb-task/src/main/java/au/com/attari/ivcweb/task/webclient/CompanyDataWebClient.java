@@ -20,13 +20,16 @@ import reactor.core.publisher.Mono;
 import javax.ws.rs.core.HttpHeaders;
 
 @Component
-public class CompanyDataWebClient implements CompanyDataWebClientIface {
+public class CompanyDataWebClient {
 
     @Value("${ivcweb.crud.baseURL}")
     private String baseURL;
 
     @Value("${ivcweb.crud.urlPath.companyData}")
     private String urlPath;
+
+    @Value("${ivcweb.crud.urlPath.companyNames}")
+    private String companyNamesUrlPath;
 
     @Value("${ivcweb.crud.principal.read}")
     String principal;
@@ -94,10 +97,32 @@ public class CompanyDataWebClient implements CompanyDataWebClientIface {
         return new ArrayList<>();
     }
     
-	public List<String> listUniqueExchanges() {
+	public List<String> getCompanyNames(String exchange) {
+
+        WebClient client = getWebClient();
+
+        // Flux<String> returns as one String so use Flux<Object>
+        Flux<Object> strFlux = client.get()
+                .uri(uriBuilder -> uriBuilder.path(companyNamesUrlPath)
+                        .queryParam("exchange", exchange)
+                        .build())
+                .retrieve()
+                .bodyToFlux(Object.class);
+        List<Object> companyNamesOL = strFlux.collectList().block();
+        List<String> companyNamesL = companyNamesOL.stream().map(Object::toString).collect(Collectors.toList());
+        // companyNamesL.forEach(System.out::println);
+
+        logger.info("size of data returned for company names from exchange: {} is {}",
+                exchange,
+                companyNamesL.size()
+        );
+        return companyNamesL;
+	}
+
+    public List<String> listUniqueExchanges() {
 
         return new ArrayList<>();
-	}
+    }
 
     private WebClient getWebClient() {
         WebClient client = WebClient.builder()

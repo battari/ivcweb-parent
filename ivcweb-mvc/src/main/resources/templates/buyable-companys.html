@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home page</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+      table,tr,th,td {
+         border:1px solid black;
+      }
+   </style>
+</head>
+<body>
+<p>
+    List of buyable companys
+</p>
+
+<div th:if="${ not#lists.isEmpty(buyableCompanys)}">
+    <table>
+        <tr>
+            <th>Company</th>
+            <th>Exchange</th>
+            <th>Date</th>
+            <th>Intrinsic Value Per Share</th>
+            <th>Required Rate</th>
+            <th>Value</th>
+            <th>Date Value</th>
+        </tr>
+        <tr th:each="item : ${buyableCompanys}">
+            <td th:text="${item.company}"/>
+            <td th:text="${item.exchange}"/>
+            <td th:text="${item.date}"/>
+            <td style="text-align: center" th:text="${item.intrinsicValuePerShare}"/>
+            <td th:text="${item.requiredRate} "/>
+            <td style="text-align: center" th:text="${item.value}"/>
+            <td th:text="${item.dateValue}"/>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
