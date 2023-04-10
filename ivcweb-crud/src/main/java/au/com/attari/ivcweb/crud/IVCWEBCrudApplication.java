@@ -1,5 +1,6 @@
 package au.com.attari.ivcweb.crud;
 
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
@@ -7,6 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 // @ComponentScan({"au.com.attari.ivcweb.crud.springboot","au.com.attari.ivcweb.crud.controller","au.com.attari.ivcweb.crud.service", "au.com.attari.ivcweb.crud.repository"})
 @SpringBootApplication
+@EnableEncryptableProperties
 public class IVCWEBCrudApplication {
 
 	public static void main(String[] args) {

@@ -5,7 +5,7 @@ public class CompanyValueHiLo {
     String company;
     String exchange;
     String hiYearValue;
-    String loYearYalue;
+    String loYearValue;
     String date;
 
     public int getId() {
@@ -40,12 +40,12 @@ public class CompanyValueHiLo {
         this.hiYearValue = hiYearValue;
     }
 
-    public String getLoYearYalue() {
-        return loYearYalue;
+    public String getLoYearValue() {
+        return loYearValue;
     }
 
-    public void setLoYearYalue(String loYearYalue) {
-        this.loYearYalue = loYearYalue;
+    public void setLoYearValue(String loYearValue) {
+        this.loYearValue = loYearValue;
     }
 
     public String getDate() {

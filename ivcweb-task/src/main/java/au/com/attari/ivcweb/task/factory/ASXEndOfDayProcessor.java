@@ -94,6 +94,10 @@ public class ASXEndOfDayProcessor {
 					}
 					long d = getDate(csvRecord.get("Date")).getTime();
 					int year = prvGetCalendarYear(d);
+					if(year == 2019) {
+						int i = 0;
+						i++;
+					}
 					long currentD = new Date().getTime();
                     String closingPrice = csvRecord.get("Closing Price");
 					if(currentD - d <= 3 * 60 * 60 * 1000 * 24) { // 3 days to cater for weekends
@@ -110,6 +114,7 @@ public class ASXEndOfDayProcessor {
                         CompanyValueHiLo tmp = new CompanyValueHiLo();
                         tmp.setCompany(company);
                         tmp.setExchange(exchange);
+						tmp.setDate(String.valueOf(year));
                         Map<String, CompanyValueHiLo> tmpMap = companyValueHiLoWebClient.getByCompanyAndDate(tmp)
                                 .stream()
                                 .collect(Collectors.toMap(
@@ -125,23 +130,20 @@ public class ASXEndOfDayProcessor {
                         cVHL= companyValueHiLoMap.get(key);
                         if(cVHL.getHiYearValue().compareTo(closingPrice) < 0) {
                             cVHL.setHiYearValue(closingPrice);
-                            post = true;
+							companyValueHiLoWebClient.update(cVHL,cVHL.getId());
                         }
-                        else if(cVHL.getLoYearYalue().compareTo(closingPrice) > 0) {
-                            cVHL.setLoYearYalue(closingPrice);
-                            post = true;
+                        else if(cVHL.getLoYearValue().compareTo(closingPrice) > 0) {
+                            cVHL.setLoYearValue(closingPrice);
+							companyValueHiLoWebClient.update(cVHL,cVHL.getId());
                         }
                     }
                     else {
                         cVHL.setCompany(company);
                         cVHL.setExchange(exchange);
-                        cVHL.setLoYearYalue(closingPrice);
+                        cVHL.setLoYearValue(closingPrice);
                         cVHL.setHiYearValue(closingPrice);
                         cVHL.setDate(String.valueOf(year));
-                        post = true;
-                    }
-                    if(post) {
-                        companyValueHiLoWebClient.create(cVHL);
+						companyValueHiLoWebClient.create(cVHL);
                     }
 				}
 			} catch (Exception e){
@@ -182,7 +184,6 @@ public class ASXEndOfDayProcessor {
 	}
 
 	private int prvGetCalendarYear(long d) {
-		prvGetCalendarYear(d);
 		Calendar c = Calendar.getInstance();
 		c.setTimeInMillis(d);
 		return c.get(Calendar.YEAR);

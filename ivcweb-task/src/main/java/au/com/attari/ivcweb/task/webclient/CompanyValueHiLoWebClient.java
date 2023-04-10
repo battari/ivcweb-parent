@@ -50,6 +50,22 @@ public class CompanyValueHiLoWebClient {
        return true;
     }
 
+    public boolean update(CompanyValueHiLo inCompanyValueHiLo, int id) {
+        WebClient client = getWebClient();
+        Mono<Integer> companyValueHiLoIdMono = client.patch()
+                .uri(uriBuilder -> uriBuilder.path(urlPath + "/{id}").build(id))
+                .accept(MediaType.APPLICATION_JSON)
+                .body(Mono.just(inCompanyValueHiLo), CompanyValueHiLo.class)
+                .retrieve()
+                .bodyToMono(Integer.class);
+        Integer retId = companyValueHiLoIdMono.block();
+        logger.info("Created CompanyValueHiLo for company: {}, exchange: {} aqnd date {} with id: {}"
+                , inCompanyValueHiLo.getCompany(), inCompanyValueHiLo.getExchange()
+                , inCompanyValueHiLo.getDate(), id);
+
+        return true;
+    }
+
     public List<CompanyValueHiLo> getByCompanyAndDate(CompanyValueHiLo inCompanyValueHiLo) {
         WebClient client = getWebClient();
 

@@ -27,7 +27,7 @@ public class PortfolioItemController {
 
     @DeleteMapping("/portfolio-item/{id}")
     private void deletePortfolioItem(@PathVariable("id") int id) {
-        logger.info("Calling deleteCompanyValue by id {}...", id);
+        logger.info("Calling delete PortfolioItem by id {}...", id);
         portfolioItemService.delete(id);
     }
 
@@ -35,7 +35,7 @@ public class PortfolioItemController {
     @PostMapping("/portfolio-item")
     private int save(@RequestBody PortfolioItem portfolioItem) {
         System.out.println("here ....");
-        logger.info("Calling saveCompanyData...");
+        logger.info("Calling save PortfolioItem...");
         portfolioItemService.saveOrUpdate(portfolioItem);
         return portfolioItem.getId();
     }
@@ -43,14 +43,14 @@ public class PortfolioItemController {
     //creating put mapping that updates the Company Data (other) detail
     @PutMapping("/portfolio-item")
     private PortfolioItem update(@RequestBody PortfolioItem portfolioItem) {
-        logger.info("Calling updateCompanyData...");
+        logger.info("Calling saveOrUpdate PortfolioItem...");
         portfolioItemService.saveOrUpdate(portfolioItem);
         return portfolioItem;
     }
 
     @PatchMapping("/portfolio-item/{id}")
     private int update(@RequestBody PortfolioItem portfolioItem, @PathVariable("id") int id) {
-        logger.info("Calling updateCompanyData...");
+        logger.info("Calling update PortfolioItem...");
         portfolioItem.setId(id);
         portfolioItemService.update(portfolioItem, id);
         return portfolioItem.getId();

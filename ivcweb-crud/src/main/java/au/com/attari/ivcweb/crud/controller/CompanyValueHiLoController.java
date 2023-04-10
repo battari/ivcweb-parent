@@ -1,6 +1,7 @@
 package au.com.attari.ivcweb.crud.controller;
 
 import au.com.attari.ivcweb.crud.model.CompanyValueHiLo;
+import au.com.attari.ivcweb.crud.model.PortfolioItem;
 import au.com.attari.ivcweb.crud.service.CompanyValueHiLoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,7 @@ public class CompanyValueHiLoController
     //creating a delete mapping that deletes a specified id
     @DeleteMapping("/company-valuehilo/{id}")
     private void deleteCompanyValueHiLo(@PathVariable("id") int id) {
-        logger.info("Calling deleteCompanyValueHiLo by id {}...", id);
+        logger.info("Calling delete CompanyValueHiLo by id {}...", id);
         companyValueHiLoService.delete(id);
     }
 
@@ -57,7 +58,7 @@ public class CompanyValueHiLoController
     @PostMapping("/company-valuehilo")
     private int saveCompanyValueHiLo(@RequestBody CompanyValueHiLo companyValueHiLo) {
         System.out.println("here ....");
-        logger.info("Calling saveCompanyValueHiLo...");
+        logger.info("Calling save CompanyValueHiLo...");
         companyValueHiLoService.saveOrUpdate(companyValueHiLo);
         return companyValueHiLo.getId();
     }
@@ -65,8 +66,16 @@ public class CompanyValueHiLoController
     //creating put mapping that updates the Company ValueHiLo detail
     @PutMapping("/company-valuehilo")
     private CompanyValueHiLo update(@RequestBody CompanyValueHiLo companyValueHiLo) {
-        logger.info("Calling updateCompanyValueHiLo...");
+        logger.info("Calling saveOrUpdate CompanyValueHiLo...");
         companyValueHiLoService.saveOrUpdate(companyValueHiLo);
         return companyValueHiLo;
+    }
+
+    @PatchMapping("/company-valuehilo/{id}")
+    private int update(@RequestBody CompanyValueHiLo companyValueHiLo, @PathVariable("id") int id) {
+        logger.info("Calling updateCompanyData...");
+        companyValueHiLo.setId(id);
+        companyValueHiLoService.update(companyValueHiLo, id);
+        return companyValueHiLo.getId();
     }
 }
