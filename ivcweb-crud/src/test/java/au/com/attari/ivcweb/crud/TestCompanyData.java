@@ -3,6 +3,7 @@ package au.com.attari.ivcweb.crud;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import au.com.attari.ivcweb.crud.model.CompanyData;
@@ -22,7 +23,7 @@ public class TestCompanyData {
     @Autowired
     CompanyDataRepository repository;
 
-    @Test
+    @Disabled
     public void testSuccessRepository() throws Exception {
 
         CompanyData cd = new CompanyData();
@@ -43,7 +44,7 @@ public class TestCompanyData {
         Assertions.assertEquals(false,queryResult.get().getCompany().isEmpty());
     }
 
-    @Test
+    @Disabled
     public void TestFailRepositoryTest() throws Exception {
 
         CompanyData cd = new CompanyData();

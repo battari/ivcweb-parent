@@ -29,6 +29,21 @@ public class CompanyDataOther
     private String debtToEquityRatio;
     @Column(name="earning_per_share")
     private String earningPerShare;
+
+    public CompanyDataOther() {
+    }
+
+    public CompanyDataOther(int id, String company, String exchange, String date, String companyName, String averageAnnualPeRatio, String debtToEquityRatio, String earningPerShare) {
+        this.id = id;
+        this.company = company;
+        this.exchange = exchange;
+        this.date = date;
+        this.companyName = companyName;
+        this.averageAnnualPeRatio = averageAnnualPeRatio;
+        this.debtToEquityRatio = debtToEquityRatio;
+        this.earningPerShare = earningPerShare;
+    }
+
     public int getId() {
         return id;
     }

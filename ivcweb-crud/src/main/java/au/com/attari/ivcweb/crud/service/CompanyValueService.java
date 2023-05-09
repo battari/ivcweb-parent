@@ -48,4 +48,8 @@ public class CompanyValueService
         companyValueRepository.save(companyValue);
     }
 
+    public void saveAll(List<CompanyValue> companyValueAl) {
+        companyValueRepository.saveAll(companyValueAl);
+    }
+
 }

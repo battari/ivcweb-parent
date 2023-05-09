@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 //mark class as Controller
@@ -51,10 +52,19 @@ public class CompanyValueController
     //creating post mapping that post the Company Data (other) detail in the database
     @PostMapping("/company-value")
     private int saveCompanyValue(@RequestBody CompanyValue companyValue) {
-        System.out.println("here ....");
         logger.info("Calling saveCompanyData...");
         companyValueService.saveOrUpdate(companyValue);
         return companyValue.getId();
+    }
+
+    // Creating post mapping that inserts company values in bulk and retrieves processing time
+    @PostMapping("/company-values")
+    private long saveAllCompanyValue(@RequestBody List<CompanyValue> companyValueAl) {
+        logger.info("Calling saveAllCompanyData...");
+        long startTime = new Date().getTime();
+        companyValueService.saveAll(companyValueAl);
+        long endTime = new Date().getTime();
+        return (endTime - startTime)/1000;
     }
 
     //creating put mapping that updates the Company Data (other) detail

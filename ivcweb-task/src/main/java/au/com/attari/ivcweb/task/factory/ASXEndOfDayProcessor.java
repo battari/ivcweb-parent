@@ -94,7 +94,7 @@ public class ASXEndOfDayProcessor {
 					}
 					long d = getDate(csvRecord.get("Date")).getTime();
 					int year = prvGetCalendarYear(d);
-					if(year == 2019) {
+					if(year == 2021) {
 						int i = 0;
 						i++;
 					}
@@ -128,11 +128,11 @@ public class ASXEndOfDayProcessor {
                     boolean post = false;
                     if(companyValueHiLoMap.get(key) != null) {
                         cVHL= companyValueHiLoMap.get(key);
-                        if(cVHL.getHiYearValue().compareTo(closingPrice) < 0) {
+                        if(new BigDecimal(cVHL.getHiYearValue()).compareTo(new BigDecimal(closingPrice)) < 0) {
                             cVHL.setHiYearValue(closingPrice);
 							companyValueHiLoWebClient.update(cVHL,cVHL.getId());
                         }
-                        else if(cVHL.getLoYearValue().compareTo(closingPrice) > 0) {
+                        else if(new BigDecimal(cVHL.getLoYearValue()).compareTo(new BigDecimal(closingPrice)) > 0) {
                             cVHL.setLoYearValue(closingPrice);
 							companyValueHiLoWebClient.update(cVHL,cVHL.getId());
                         }
