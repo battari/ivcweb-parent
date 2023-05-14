@@ -1,107 +1,97 @@
 package au.com.attari.ivcweb.crud;
 
+import au.com.attari.ivcweb.crud.security.jwt.AuthEntryPointJwt;
+import au.com.attari.ivcweb.crud.security.jwt.AuthTokenFilter;
+import au.com.attari.ivcweb.crud.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Role;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
-import javax.ws.rs.HttpMethod;
-import java.util.Arrays;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity
-@Order(value = 2)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Autowired
-    private DataSource dataSource;
+    UserDetailsServiceImpl userDetailsService;
 
-    @PostConstruct
-    void init() {
-        setDataSource(DataSourceBuilder.create().build());
-    }
-
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .httpBasic();
-        http.csrf().disable();
-
-    }
-
-    // It looks like filter chain works for POST (but not protected configure method (maybe related to version of boot)
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .httpBasic();
-        http.csrf().disable();
-        return http.build();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+
+        return authProvider;
     }
 
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth)
-            throws Exception
-    {
-        auth.jdbcAuthentication().passwordEncoder( SecurityConfig.passwordEncoder())
-                .dataSource(getDataSource())
-                .usersByUsernameQuery("select username,password,enabled "
-                        + "from users "
-                        + "where username = ? ")
-                .authoritiesByUsernameQuery("select username,role "
-                        + "from roles "
-                        + "where username = ?");
-        /*auth.inMemoryAuthentication()
-                .withUser("admin")
-                .password("{noop}password")
-                .roles("USER");*/
+    private AuthEntryPointJwt unauthorizedHandler;
 
+    @Bean
+    public AuthTokenFilter authenticationJwtTokenFilter() {
+        return new AuthTokenFilter();
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("*"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
-        configuration.addAllowedHeader("Content-Type");
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
     }
 
-    @Bean
-    public static PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    @Configuration
+    @Order(1)
+    public class JwtSecurityConfig {
+
+        @Bean(name="filterChainOrder1")
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+            http.cors().and().csrf().disable()
+                    .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                    .authorizeRequests().antMatchers("/api/auth/**").permitAll()
+                    .antMatchers("/ivcweb/ivcweb-crud/**").permitAll()
+                    .anyRequest().authenticated()
+            ;
+
+            http.authenticationProvider(authenticationProvider());
+
+            http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
+            return http.build();
+        }
     }
 
-    public DataSource getDataSource() {
-        return dataSource;
-    }
+    @Configuration
+    @Order(2)
+    class BasicSecurityConfig {
 
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
+        @Bean(name="filterChainOrder2")
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+            http.cors().and().csrf().disable()
+                    .authorizeRequests()
+                    .antMatchers("/ivcweb/ivcweb-crud/**").permitAll()
+                    .antMatchers("/ivcweb/ivcweb-crud/**").permitAll()
+                    .anyRequest()
+                    .authenticated();
+
+            http.authenticationProvider(authenticationProvider());
+
+            http.httpBasic();
+
+            return http.build();
+        }
     }
 }

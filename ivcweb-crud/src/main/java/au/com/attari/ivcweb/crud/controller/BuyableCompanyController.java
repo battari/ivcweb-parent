@@ -5,6 +5,7 @@ import au.com.attari.ivcweb.crud.service.BuyableCompanyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class BuyableCompanyController {
     BuyableCompanyService buyableCompanyService;
 
     @GetMapping("/buyable-companys")
+    // @PreAuthorize("hasRole('service')")
     private List<BuyableCompany> getDistinctBuyableCompanyByExchange(@RequestParam("exchange") String exchange) {
         logger.info("Calling getByExchange {}...", exchange);
         return buyableCompanyService.getByExchange(exchange);
