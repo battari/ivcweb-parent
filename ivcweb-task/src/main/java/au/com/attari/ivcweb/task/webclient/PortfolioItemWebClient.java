@@ -65,7 +65,7 @@ public class PortfolioItemWebClient {
 
         WebClient client = getWebClient();
         Mono<Integer> portfolioItemIdMono = client.patch()
-                .uri(urlPath + id)
+                .uri(urlPath + "/" + id)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(Mono.just(inPortfolioItem), PortfolioItem.class)
                 .retrieve()
